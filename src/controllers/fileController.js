@@ -18,6 +18,19 @@ export async function createFile(req, res){
     const {authorization} = req.headers;
     const token = authorization?.replace('Bearer ', '')
 
+    const fileSchema = joi.object({
+        value: joi.number().positive().required(),
+        description: joi.string().required(),
+        type: joi.string().valid('revenue', 'expense').required()
+    });
+    
+    const { error } = fileSchema.validate(file);
+    
+    if (error) {
+        const messages = error.details.map(err => err.message)
+        return res.status(422).send(messages);
+    }
+    
     const session = await db.collection('sessions').findOne({token});
 
     if(!session){

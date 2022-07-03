@@ -27,11 +27,9 @@ export async function createUser(req, res) {
     }
 
     if( user.password !== user.password2){
-        console.log(user.password, user.password2)
         return res.status(400).send('Senhas são diferentes, insira duas senhas idênticas')
     } 
     const encrypedPassword = bcrypt.hashSync(user.password, 10);
-    console.log(user, encrypedPassword)
 
     await db.collection('users').insertOne({name: user.name, email: user.email, password: encrypedPassword});
 
