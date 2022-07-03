@@ -1,9 +1,15 @@
-import { db } from "../dbStrategy/mongo.js";
+import { db, objectId } from "../dbStrategy/mongo.js";
 import joi from "joi";
 import dayjs from "dayjs";
 
 export async function getFiles(req, res){
+    const session = res.locals.session;
 
+    const files = await db.collection('files').find({userId: new objectId(session.userId)}).toArray();
+
+    const user = await db.collection('users').findOne({_id: new objectId(session.userId) });
+    const body = { name: user.name, files}
+    res.send(body);
 }
 
 export async function createFile(req, res){
