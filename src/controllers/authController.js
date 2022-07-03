@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import { db } from "../dbStrategy/mongo.js";
 import joi from "joi";
+import { v4 as uuid } from "uuid";
 
 export async function createUser(req, res) {
 
@@ -35,4 +36,19 @@ export async function createUser(req, res) {
     await db.collection('users').insertOne({name: user.name, email: user.email, password: encrypedPassword});
 
     res.status(201).send('Usuário criado com sucesso :)');
+}
+
+export async function loginUser(req, res){
+    const user = req.body;
+
+    const cadastredUser = await db.collection('users').findOne({email: user.email})
+
+    if( cadastredUser && bcrypt.compareSync(user.password, cadastredUser.password)){
+        const token = uuid();
+
+        await db.collection('sessions').insertOne({token, userId: cadastredUser._id});
+        return res.status(201).send({token});
+    } else{
+        return res.status(401).send('Senha ou email incorretos!');
+    }
 }
