@@ -41,6 +41,16 @@ export async function createUser(req, res) {
 export async function loginUser(req, res){
     const user = req.body;
 
+    const userSchema = joi.object({
+        email: joi.string().email().required(),
+        password: joi.string().required()
+    })
+
+    const {error} = userSchema.validate(user, {abortEarly: false});
+    if(error){
+        const messages = error.details.map(err => err.message)
+        return res.status(422).send(messages)
+    }
     const cadastredUser = await db.collection('users').findOne({email: user.email})
 
     if( cadastredUser && bcrypt.compareSync(user.password, cadastredUser.password)){
