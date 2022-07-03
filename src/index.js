@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import authRouter from "./routes/authRouter.js"
 import userRouter from "./routes/userRouter.js"
+import fileRouter from "./routes/fileRouter.js"
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ app.use(cors());
 
 app.use(authRouter);
 app.use(userRouter);
+app.use(fileRouter);
 
 const PORT = process.env.PORT || 5001
 app.listen(PORT, ()=> console.log('Servidor está rodando na porta 5000'))
